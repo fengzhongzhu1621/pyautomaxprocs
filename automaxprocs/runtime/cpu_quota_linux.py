@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import platform
 import math
 from .runtime import (
     CPUQuotaStatus,
