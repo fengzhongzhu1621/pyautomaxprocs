@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import multiprocessing
 from .runtime import cpu_quota_to_max_procs
 
 
 def get_cpu_count():
-    import psutil
-    return psutil.cpu_count()
+    return multiprocessing.cpu_count()
 
 
 def get_max_procs():
