@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+CPUQuotaStatus = int
+
 # CPUQuotaUndefined is returned when CPU quota is undefined
 CPUQuotaUndefined = 0
 # CPUQuotaUsed is returned when a valid CPU quota can be used
