@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-from setuptools import setup, find_packages
+from setuptools import find_packages
 
 import logging
 import os
@@ -115,7 +115,7 @@ def do_setup():
         install_requires=install_requires,
         zip_safe=False,
         scripts=None,
-        keywords='xTool',
+        keywords='automaxprocs',
         classifiers=[
             'Intended Audience :: Developers',
             'License :: OSI Approved :: MIT License',
@@ -126,12 +126,9 @@ def do_setup():
             'Programming Language :: Python :: 3',
             'Programming Language :: Python :: 3.6',
         ],
-        setup_requires=[
-            "flake8",
-            'docutils>=0.14',
-        ],
+        setup_requires=[],
         extras_require={
-            'dev': ['pytest'],
+            'dev': ['pytest', 'bump2version'],
         },
         test_suite='tests',
         tests_require=test_requirements,
