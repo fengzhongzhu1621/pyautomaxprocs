@@ -11,6 +11,7 @@ from ..cgroups.cgroups import new_cgroups_for_current_process
 
 
 def cpu_quota_to_max_procs(min_value: int) -> (int, CPUQuotaStatus):
+    # 当前进程的cgroup信息
     cgroups = new_cgroups_for_current_process()
     if not cgroups:
         return -1, CPUQuotaUndefined

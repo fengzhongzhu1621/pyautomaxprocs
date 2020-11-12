@@ -33,7 +33,10 @@ _cgroupCPUCFSQuotaUsParam = "cpu.cfs_quota_us"
 # 周期内允许占用的CPU时间，默认为 100000，单位为微秒us
 _cgroupCPUCFSPeriodUsParam = "cpu.cfs_period_us"
 
+# /proc/self 下是当前进程的信息
+# /proc/self/cgroup 是当前进程的cgroup信息
 _procPathCGroup = "/proc/self/cgroup"
+# 记录当前系统所有挂载文件系统的信息
 _procPathMountInfo = "/proc/self/mountinfo"
 
 
@@ -66,21 +69,31 @@ class CGroups:
 
 
 def new_cgroups(proc_path_mount_info, proc_path_cgroup: str) -> Dict[str, CGroups]:
+    """
+
+    :param proc_path_mount_info: 当前系统所有挂载文件系统的信息
+    :param proc_path_cgroup: 当前进程的cgroup信息
+    :return:
+    """
+    # 解析当前进程的cgroup子系统信息
     cgroup_subsystems = parse_cgroup_subsystems(proc_path_cgroup)
     cgroups = {}
 
     def new_mount_point(mp: MountPoint) -> None:
-        if mp.FSType != _cgroupFSType:
+        # 判断文件系统是否是cgroup
+        if mp.fs_type != _cgroupFSType:
             return
-
-        for opt in mp.SuperOptions:
-            subsys, exists = cgroup_subsystems[opt]
-            if not exists:
+        # 遍历超级快选项
+        for opt in mp.super_options:
+            # 判断cgroups子系统是否存在
+            subsys = cgroup_subsystems.get(opt)
+            if not subsys:
                 continue
-
-            cgroup_path = mp.Translate(subsys.Name)
+            # 获得cgroup的挂载点路径
+            cgroup_path = mp.translate(subsys.name)
             cgroups[opt] = CGroup(cgroup_path)
 
+    # 解析挂载的文件系统信息
     parse_mount_info(proc_path_mount_info, new_mount_point)
     return cgroups
 
