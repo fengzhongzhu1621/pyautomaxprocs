@@ -41,8 +41,8 @@ _procPathMountInfo = "/proc/self/mountinfo"
 
 
 class CGroups:
-    def __init__(self):
-        self.cgroups = {}
+    def __init__(self, cgroups):
+        self.cgroups = cgroups
 
     def cpu_quota(self):
         cpu_cgroup = self.cgroups.get(_cgroupSubsysCPU)
@@ -95,7 +95,7 @@ def new_cgroups(proc_path_mount_info, proc_path_cgroup: str) -> Dict[str, CGroup
 
     # 解析挂载的文件系统信息
     parse_mount_info(proc_path_mount_info, new_mount_point)
-    return cgroups
+    return CGroups(cgroups)
 
 
 def new_cgroups_for_current_process():
