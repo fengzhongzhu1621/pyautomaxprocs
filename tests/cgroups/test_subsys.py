@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import pytest
-from automaxprocs.cgroups.subsys import (CGroupSubsys, new_cgroup_subsys_from_line)
+from automaxprocs.cgroups.subsys import (
+    CGroupSubsys, new_cgroup_subsys_from_line)
 
 
 @pytest.mark.parametrize("test_table_item", [
@@ -26,6 +27,6 @@ from automaxprocs.cgroups.subsys import (CGroupSubsys, new_cgroup_subsys_from_li
 ])
 def test_new_cgroup_subsys_from_line(test_table_item):
     subsys = new_cgroup_subsys_from_line(test_table_item["line"])
-    print("subsys = ", subsys.__dict__, type(subsys))
-    #assert test_table_item.expectedSubsys == subsys
-
+    assert subsys.id == test_table_item["expectedSubsys"].id
+    assert subsys.subsystems == test_table_item["expectedSubsys"].subsystems
+    assert subsys.name == test_table_item["expectedSubsys"].name
