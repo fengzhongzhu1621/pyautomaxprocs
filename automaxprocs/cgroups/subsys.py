@@ -14,7 +14,7 @@ _csFieldCount = 3
 
 
 class CGroupSubsys:
-    def __init(self, subsys_id: int, subsystems: List[str], name: str):
+    def __init__(self, subsys_id: int, subsystems: List[str], name: str):
         self.id = subsys_id
         self.subsystems = subsystems
         self.name = name
