@@ -82,6 +82,7 @@ def do_setup():
         zip_safe=False,
         scripts=None,
         keywords='automaxprocs',
+        url='https://github.com/fengzhongzhu1621/automaxprocs',
         classifiers=[
             'Intended Audience :: Developers',
             'License :: OSI Approved :: MIT License',
