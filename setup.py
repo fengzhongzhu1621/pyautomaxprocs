@@ -14,46 +14,12 @@ try:
 except ImportError:
     from distutils.core import setup
 from setuptools.command.test import test as TestCommand
-from setuptools import Command
 from importlib import import_module
 
 
 logger = logging.getLogger(__name__)
 
 version = import_module('automaxprocs.version').version
-
-
-class Tox(TestCommand):
-    user_options = [('tox-args=', None, "Arguments to pass to tox")]
-
-    def initialize_options(self):
-        TestCommand.initialize_options(self)
-        self.tox_args = ''
-
-    def finalize_options(self):
-        TestCommand.finalize_options(self)
-        self.test_args = []
-        self.test_suite = True
-
-    def run_tests(self):
-        # import here, cause outside the eggs aren't loaded
-        import tox
-        errno = tox.cmdline(args=self.tox_args.split())
-        sys.exit(errno)
-
-
-class CleanCommand(Command):
-    """Custom clean command to tidy up the project root."""
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        os.system('rm -vrf ./build ./dist ./*.pyc ./*.tgz ./*.egg-info')
 
 
 def read(filename):
@@ -81,8 +47,8 @@ class PyTest(TestCommand):
         sys.exit(errno)
 
 
-README = os.path.join(os.path.dirname(__file__), 'README.md')
-long_description = open(README, encoding='utf-8').read() + '\n\n'
+readme = os.path.join(os.path.dirname(__file__), 'README.md')
+long_description = open(readme, encoding='utf-8').read() + '\n\n'
 
 install_requires = []
 if os.path.exists("requirements.txt"):
@@ -132,11 +98,7 @@ def do_setup():
         },
         test_suite='tests',
         tests_require=test_requirements,
-        cmdclass={'test': PyTest},
-        # cmdclass={
-        #     'test': Tox,
-        #     'extra_clean': CleanCommand,
-        # },
+        cmdclass={'test': PyTest}
     )
 
 

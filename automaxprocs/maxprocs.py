@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import multiprocessing
-from .runtime import cpu_quota_to_max_procs
+#from automaxprocs.runtime import cpu_quota_to_max_procs
 
-
+print("test")
 def get_cpu_count():
     return multiprocessing.cpu_count()
 
