@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 
+from collections import UserDict
 from typing import Dict
 from .subsys import parse_cgroup_subsystems
 from .mountpoint import MountPoint, parse_mount_info
+from .errors import (
+    CgroupSubsysFormatInvalidError,
+    MountPointFormatInvalidError,
+    PathNotExposedFromMountPointError)
 from .cgroup import CGroup
 
 
@@ -40,24 +45,21 @@ _procPathCGroup = "/proc/self/cgroup"
 _procPathMountInfo = "/proc/self/mountinfo"
 
 
-class CGroups:
-    def __init__(self, cgroups):
-        self.cgroups = cgroups
-
+class CGroups(UserDict):
     def cpu_quota(self):
-        cpu_cgroup = self.cgroups.get(_cgroupSubsysCPU)
+        cpu_cgroup = self.get(_cgroupSubsysCPU)
         if not cpu_cgroup:
             return -1, False
 
         try:
-            cfs_quota_us = cpu_cgroup.get_int(_cgroupCPUCFSQuotaUsParam)
+            cfs_quota_us = cpu_cgroup.read_int(_cgroupCPUCFSQuotaUsParam)
         except ValueError:
             return -1, False
         if cfs_quota_us <= 0:
             return -1, False
 
         try:
-            cfs_period_us = cpu_cgroup.get_int(_cgroupCPUCFSPeriodUsParam)
+            cfs_period_us = cpu_cgroup.read_int(_cgroupCPUCFSPeriodUsParam)
         except ValueError:
             return -1, False
 
@@ -68,7 +70,8 @@ class CGroups:
         return quota, True
 
 
-def new_cgroups(proc_path_mount_info, proc_path_cgroup: str) -> Dict[str, CGroups]:
+def new_cgroups(proc_path_mount_info,
+                proc_path_cgroup: str) -> Dict[str, CGroups]:
     """
 
     :param proc_path_mount_info: 当前系统所有挂载文件系统的信息
@@ -76,7 +79,10 @@ def new_cgroups(proc_path_mount_info, proc_path_cgroup: str) -> Dict[str, CGroup
     :return:
     """
     # 解析当前进程的cgroup子系统信息
-    cgroup_subsystems = parse_cgroup_subsystems(proc_path_cgroup)
+    try:
+        cgroup_subsystems = parse_cgroup_subsystems(proc_path_cgroup)
+    except (ValueError, CgroupSubsysFormatInvalidError):
+        return
     cgroups = {}
 
     def new_mount_point(mp: MountPoint) -> None:
@@ -94,7 +100,10 @@ def new_cgroups(proc_path_mount_info, proc_path_cgroup: str) -> Dict[str, CGroup
             cgroups[opt] = CGroup(cgroup_path)
 
     # 解析挂载的文件系统信息
-    parse_mount_info(proc_path_mount_info, new_mount_point)
+    try:
+        parse_mount_info(proc_path_mount_info, new_mount_point)
+    except (FileNotFoundError, MountPointFormatInvalidError, PathNotExposedFromMountPointError):
+        return
     return CGroups(cgroups)
 
 

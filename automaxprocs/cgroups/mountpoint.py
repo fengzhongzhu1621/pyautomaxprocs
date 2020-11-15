@@ -64,9 +64,11 @@ class MountPoint:
 
         if rel_path == ".." or rel_path.startswith("../"):
             raise PathNotExposedFromMountPointError(
-                self.mount_point, self.root, self.path)
+                self.mount_point, self.root, abs_path)
 
-        return os.path.join(self.mount_point, rel_path)
+        if rel_path != ".":
+            return os.path.join(self.mount_point, rel_path)
+        return self.mount_point
 
 
 def new_mount_point_from_line(line: str) -> MountPoint:
