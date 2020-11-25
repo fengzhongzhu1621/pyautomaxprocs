@@ -68,7 +68,7 @@ install_requires.extend([
 
 def do_setup():
     setup(
-        name='automaxprocs',
+        name='pyautomaxprocs',
         version=version,
         description='Automatically get Linux container CPU quota like uber automaxprocs.',
         long_description=long_description,
