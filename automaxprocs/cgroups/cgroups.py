@@ -9,6 +9,7 @@ from .errors import (
     MountPointFormatInvalidError,
     PathNotExposedFromMountPointError)
 from .cgroup import CGroup
+import math
 
 
 # _cgroupFSType is the Linux CGroup file system type used in
@@ -37,6 +38,8 @@ _cgroupCPUCFSQuotaUsParam = "cpu.cfs_quota_us"
 # parameter.
 # 周期内允许占用的CPU时间，默认为 100000，单位为微秒us
 _cgroupCPUCFSPeriodUsParam = "cpu.cfs_period_us"
+
+_cgroupCPUSharesParam = "cpu.shares"
 
 # /proc/self 下是当前进程的信息
 # /proc/self/cgroup 是当前进程的cgroup信息
@@ -68,6 +71,20 @@ class CGroups(UserDict):
 
         quota = float(cfs_quota_us) / float(cfs_period_us)
         return quota, True
+
+    def cpu_request(self):
+        cpu_cgroup = self.get(_cgroupSubsysCPU)
+        if not cpu_cgroup:
+            return -1, False
+
+        try:
+            cpu_shares = cpu_cgroup.read_int(_cgroupCPUSharesParam)/1024
+        except ValueError:
+            return -1, False
+        if cpu_shares <= 0:
+            return -1, False
+
+        return cpu_shares, True
 
 
 def new_cgroups(proc_path_mount_info,

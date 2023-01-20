@@ -26,3 +26,19 @@ def cpu_quota_to_max_procs(min_value: int) -> (int, CPUQuotaStatus):
         return min_value, CPUQuotaMinUsed
 
     return max_procs, CPUQuotaUsed
+
+def cpu_request_to_max_procs(min_value: int) -> (int, CPUQuotaStatus):
+    cgroups = new_cgroups_for_current_process()
+    if not cgroups:
+        return -1, CPUQuotaUndefined
+
+    cpu_request, defined = cgroups.cpu_request()
+    if not defined:
+        return -1, CPUQuotaUndefined
+
+    max_procs = int(math.floor(cpu_request))
+
+    if min_value > 0 and max_procs < min_value:
+        return min_value, CPUQuotaMinUsed
+
+    return max_procs, CPUQuotaUsed     
